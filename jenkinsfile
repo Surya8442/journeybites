@@ -25,7 +25,7 @@ pipeline {
                 echo "Testing Docker image briefly..."
                 // Run container for 5 seconds, then stop
                 sh """
-                    container_id=\$(docker run -d -p 5000:5000 ${IMAGE_NAME}:${IMAGE_TAG})
+                    container_id=\$(docker run -d -p 7894:5000 ${IMAGE_NAME}:${IMAGE_TAG})
                     sleep 5
                     docker logs \$container_id
                     docker stop \$container_id
