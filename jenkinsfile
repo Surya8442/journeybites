@@ -15,13 +15,21 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
+                echo "Building Docker image..."
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
 
-        stage('Run Container') {
+        stage('Test Docker Image') {
             steps {
-                sh "docker run --rm -p 5000:5000 ${IMAGE_NAME}:${IMAGE_TAG}"
+                echo "Testing Docker image briefly..."
+                // Run container for 5 seconds, then stop
+                sh """
+                    container_id=\$(docker run -d -p 5000:5000 ${IMAGE_NAME}:${IMAGE_TAG})
+                    sleep 5
+                    docker logs \$container_id
+                    docker stop \$container_id
+                """
             }
         }
 
@@ -30,8 +38,9 @@ pipeline {
                 branch 'main'
             }
             steps {
+                echo "Logging in and pushing to DockerHub..."
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
