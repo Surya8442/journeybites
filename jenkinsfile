@@ -23,10 +23,10 @@ pipeline {
         stage('Test Docker Image') {
             steps {
                 echo "Testing Docker image briefly..."
-                // Run container for 5 seconds, then stop
                 sh """
-                    container_id=\$(docker run -d -p 7894:5000 ${IMAGE_NAME}:${IMAGE_TAG})
+                    container_id=\$(docker run -d -p 5000:5000 ${IMAGE_NAME}:${IMAGE_TAG})
                     sleep 5
+                    echo "Container logs:"
                     docker logs \$container_id
                     docker stop \$container_id
                 """
@@ -38,7 +38,7 @@ pipeline {
                 branch 'main'
             }
             steps {
-                echo "Logging in and pushing to DockerHub..."
+                echo "Logging in and pushing image to DockerHub..."
                 withCredentials([usernamePassword(credentialsId: 'dock', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
@@ -49,6 +49,7 @@ pipeline {
 
     post {
         always {
+            echo "Cleaning workspace..."
             cleanWs()
         }
     }
