@@ -18,7 +18,7 @@ ENV PATH=/root/.local/bin:$PATH
 COPY . .
 
 # Expose backend port
-EXPOSE 5000
+EXPOSE 8080
 
 # Run backend
 CMD ["python", "app.py"]
