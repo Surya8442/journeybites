@@ -24,7 +24,7 @@ pipeline {
             steps {
                 echo "Testing Docker image briefly..."
                 sh """
-                    container_id=\$(docker run -d -p 1525:8080 ${IMAGE_NAME}:${IMAGE_TAG})
+                    container_id=\$(docker run -d -p 1525:5000 ${IMAGE_NAME}:${IMAGE_TAG})
                     sleep 5
                     echo "Container logs:"
                     docker logs \$container_id
