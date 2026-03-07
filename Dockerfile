@@ -1,24 +1,19 @@
-# Stage 1: Build dependencies
-FROM python:3.12-slim AS builder
+FROM python:3.9-slim
 
+# set working directory
 WORKDIR /app
 
+# copy requirements
 COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
 
-# Stage 2: Final runtime image
-FROM python:3.12-slim
+# install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app
-
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
-
-# Copy all files from repo root
+# copy project files
 COPY . .
 
-# Expose backend port
-EXPOSE 8080
+# expose port
+EXPOSE 5000
 
-# Run backend
-CMD ["python", "app.py"]
+# run application
+CMD ["python","app.py"]
